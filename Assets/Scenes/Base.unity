@@ -1212,6 +1212,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 533533430}
   m_CullTransparentMesh: 1
+--- !u!1 &588147016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 588147018}
+  - component: {fileID: 588147017}
+  m_Layer: 0
+  m_Name: ParticleWorld
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &588147017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588147016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a85ae49a66d6a74cb16c65edf4e022b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParticleWorld
+  g: {x: 0, y: -9.81, z: 0}
+--- !u!4 &588147018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588147016}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &608736416
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,12 +1289,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ef5fbf9a1f89d44f870a990716d7625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableButton
-  text: Soltar pelota
+  text: "Soltar part\xEDcula"
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1940998090}
-        m_TargetAssemblyTypeName: CaidaLibre, Assembly-CSharp
+      - m_Target: {fileID: 1940998096}
+        m_TargetAssemblyTypeName: Particle, Assembly-CSharp
         m_MethodName: Release
         m_Mode: 0
         m_Arguments:
@@ -4166,34 +4211,14 @@ GameObject:
   - component: {fileID: 1940998093}
   - component: {fileID: 1940998092}
   - component: {fileID: 1940998091}
-  - component: {fileID: 1940998090}
+  - component: {fileID: 1940998096}
   m_Layer: 0
-  m_Name: Pelota (CaidaLibre)
+  m_Name: Particula
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1940998090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1940998089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37e758e3e33902446b062ed5f5853432, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaidaLibre
-  g: {x: 0, y: -9.81, z: 0}
-  mass: 1
-  initialVelocity: {x: 0, y: 0, z: 0}
-  floorY: 0
-  x: {x: 0, y: 0, z: 0}
-  v: {x: 0, y: 0, z: 0}
-  t: 0
-  released: 0
 --- !u!54 &1940998091
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4314,6 +4339,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1940998096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1940998089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf5e2a53d94ce44ab1db395bf3695d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Particle
+  mass: 1
+  restitution: 0.8
+  initialVelocity: {x: 0, y: 0, z: 0}
+  waitForRelease: 1
+  x: {x: 0, y: 0, z: 0}
+  v: {x: 0, y: 0, z: 0}
+  released: 0
+  force: {x: 0, y: 0, z: 0}
 --- !u!1 &1953048733
 GameObject:
   m_ObjectHideFlags: 0
@@ -4647,3 +4692,4 @@ SceneRoots:
   - {fileID: 1940998095}
   - {fileID: 608736421}
   - {fileID: 1502312887}
+  - {fileID: 588147018}
