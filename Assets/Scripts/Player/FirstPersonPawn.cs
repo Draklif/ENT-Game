@@ -19,6 +19,9 @@ public class FirstPersonPawn : Pawn
     private Vector2 moveInput;
     private IInteractable target;
 
+    /// <summary>Lo que el jugador está mirando ahora (null si nada). Lo usa el HUD.</summary>
+    public IInteractable Target => target;
+
     void Awake()
     {
         body = GetComponent<CharacterController>();
