@@ -14,18 +14,28 @@ public class InputHint : MonoBehaviour
     /// <summary>True si lo último que se presionó fue un botón del control.</summary>
     public static bool UsingGamepad { get; private set; }
 
+    /// <summary>True si lo último que se presionó fue un botón del Arduino (lo pone ArduinoController).</summary>
+    public static bool UsingArduino;
+
     [Tooltip("La acción, arrastrada desde Assets/InputSystem_Actions (despliega la flecha del archivo).")]
     public InputActionReference action;
 
     [Tooltip("{0} se reemplaza por la tecla. Ej: \"{0}\" o \"[{0}] Vista\".")]
     public string format = "{0}";
 
+    [Tooltip("Opcional: qué mostrar si se está usando el Arduino. Ej: \"BOTÓN 1\". Vacío = no cambia.")]
+    public string arduinoKey = "";
+
     private TMP_Text text;
 
     [RuntimeInitializeOnLoadMethod]
     static void ListenForDevice()
     {
-        InputSystem.onAnyButtonPress.Call(control => UsingGamepad = control.device is Gamepad);
+        InputSystem.onAnyButtonPress.Call(control =>
+        {
+            UsingGamepad = control.device is Gamepad;
+            UsingArduino = false;
+        });
     }
 
     void Awake()
@@ -36,7 +46,8 @@ public class InputHint : MonoBehaviour
     void Update()
     {
         string group = UsingGamepad ? "Gamepad" : "Keyboard&Mouse";
-        text.text = string.Format(format, KeyName(action.action, group));
+        string key = UsingArduino && arduinoKey != "" ? arduinoKey : KeyName(action.action, group);
+        text.text = string.Format(format, key);
     }
 
     /// <summary>Nombre corto del primer botón de la acción en ese grupo ("E", "Y", "Start", "RB").</summary>

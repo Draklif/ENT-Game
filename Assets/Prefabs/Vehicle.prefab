@@ -1878,6 +1878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InputHint
   action: {fileID: 7476244043514120974, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   format: '[{0}] cambiar vista'
+  arduinoKey: "BOT\xD3N 1"
 --- !u!1 &5139712602425888425
 GameObject:
   m_ObjectHideFlags: 0

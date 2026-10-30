@@ -1,10 +1,13 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
-/// Menú de pausa (tecla Esc). Congela TODO el juego con Time.timeScale = 0
+/// Menú de pausa (Esc / Start). Congela TODO el juego con Time.timeScale = 0
 /// (la simulación también, porque corre en FixedUpdate) y suelta el mouse.
 /// Los botones llaman a los métodos públicos desde su On Click ().
+/// Con control o Arduino siempre hay un botón seleccionado para poder navegar.
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
@@ -32,7 +35,11 @@ public class PauseMenu : MonoBehaviour
         foreach (SettingSlider setting in GetComponentsInChildren<SettingSlider>(true)) setting.Init();
 
         input = new InputSystem_Actions();
-        input.UI.Cancel.performed += _ => Toggle();
+        input.UI.Menu.performed += _ => OpenOrBack(); // Esc / Start
+        input.UI.Back.performed += _ =>               // B
+        {
+            if (IsOpen) Back();
+        };
 
         Close();
     }
@@ -41,10 +48,26 @@ public class PauseMenu : MonoBehaviour
     void OnDisable() => input.Disable();
     void OnDestroy() => input.Dispose();
 
-    public void Toggle()
+    void Update()
     {
-        if (IsOpen) Close();
+        // Si se perdió la selección (ej: clic en el vacío), volver a seleccionar algo.
+        if (!IsOpen) return;
+        GameObject selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null || !selected.activeInHierarchy) SelectFirst(optionsPanel.activeSelf ? optionsPanel : pausePanel);
+    }
+
+    /// <summary>Cerrado: abre. Abierto: vuelve atrás. Lo usan Esc, Start y el botón "atrás" del Arduino.</summary>
+    public void OpenOrBack()
+    {
+        if (IsOpen) Back();
         else Open();
+    }
+
+    /// <summary>Desde Opciones vuelve a la pausa; desde la pausa, cierra.</summary>
+    public void Back()
+    {
+        if (optionsPanel.activeSelf) ShowOptions(false);
+        else Close();
     }
 
     public void Open()
@@ -53,6 +76,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0f;
         pausePanel.SetActive(true);
         optionsPanel.SetActive(false);
+        SelectFirst(pausePanel);
         if (player != null) player.enabled = false; // al apagarse suelta el cursor
     }
 
@@ -62,6 +86,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         pausePanel.SetActive(false);
         optionsPanel.SetActive(false);
+        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
         if (player != null) player.enabled = true;  // al encenderse bloquea el cursor
     }
 
@@ -69,6 +94,7 @@ public class PauseMenu : MonoBehaviour
     {
         pausePanel.SetActive(!show);
         optionsPanel.SetActive(show);
+        SelectFirst(show ? optionsPanel : pausePanel);
     }
 
     public void ResetSimulation()
@@ -81,5 +107,12 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuScene);
+    }
+
+    /// <summary>Selecciona el primer botón o slider del panel.</summary>
+    void SelectFirst(GameObject panel)
+    {
+        Selectable first = panel.GetComponentInChildren<Selectable>();
+        EventSystem.current.SetSelectedGameObject(first != null ? first.gameObject : null);
     }
 }

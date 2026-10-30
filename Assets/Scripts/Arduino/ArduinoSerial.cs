@@ -27,7 +27,16 @@ public class ArduinoSerial : MonoBehaviour
 
     void Awake()
     {
+        // Uno solo para todo el juego: sobrevive al cambiar de escena (menú → juego)
+        // para no reconectar cada vez. Si la escena trae otro, se elimina.
+        if (Instance != null)
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void OnEnable()
@@ -41,7 +50,7 @@ public class ArduinoSerial : MonoBehaviour
     {
         running = false;
         try { serial?.Close(); } catch { } // desbloquea ReadLine
-        thread.Join(500);
+        thread?.Join(500);
     }
 
     /// <summary>Valor crudo número i de la línea (0-1023 con analogRead). 0 si no ha llegado.</summary>
