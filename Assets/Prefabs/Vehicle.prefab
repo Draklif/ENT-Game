@@ -1011,8 +1011,8 @@ Camera:
   m_GameObject: {fileID: 3113171177656657350}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.84, g: 0.87, b: 0.91, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1669,7 +1669,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -250, y: -68}
-  m_SizeDelta: {x: 80, y: 20}
+  m_SizeDelta: {x: 110, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &416888189033809743
 CanvasRenderer:
@@ -1699,7 +1699,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACEL
+  m_text: ACEL / FRENO
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2648,6 +2648,8 @@ MonoBehaviour:
   pawnCamera: {fileID: 5447970862386152322}
   mass: 1200
   engineForce: 6000
+  brakeForce: 9000
+  gripPlaceholder: 6
   wheelBase: 2.5
   maxSteerAngle: 30
   views:
@@ -2658,6 +2660,7 @@ MonoBehaviour:
   v: {x: 0, y: 0, z: 0}
   heading: 0
   throttle: 0
+  brake: 0
   steer: 0
 --- !u!1 &8749555994027573344
 GameObject:

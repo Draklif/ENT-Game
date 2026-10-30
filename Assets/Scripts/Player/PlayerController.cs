@@ -54,6 +54,10 @@ public class PlayerController : MonoBehaviour
         // Valores continuos: se leen en cada frame.
         pawn.Move(input.Player.Move.ReadValue<Vector2>());
         pawn.Look(input.Player.Look.ReadValue<Vector2>() * lookSensitivity);
+        pawn.Drive(
+            input.Vehicle.Throttle.ReadValue<float>(), // W / gatillo derecho
+            input.Vehicle.Brake.ReadValue<float>(),    // S / gatillo izquierdo
+            input.Vehicle.Steer.ReadValue<float>());   // A-D / stick izquierdo
     }
 
     /// <summary>

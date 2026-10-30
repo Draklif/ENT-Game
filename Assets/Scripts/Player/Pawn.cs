@@ -14,6 +14,9 @@ public abstract class Pawn : MonoBehaviour
     public virtual void Interact() { }
     public virtual void ChangeView() { }
 
+    /// <summary>Controles de vehículo. throttle y brake van de 0 a 1, steer de -1 a 1.</summary>
+    public virtual void Drive(float throttle, float brake, float steer) { }
+
     public virtual void OnPossessed(PlayerController controller)
     {
         Controller = controller;

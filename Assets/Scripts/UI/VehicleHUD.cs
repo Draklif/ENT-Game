@@ -28,7 +28,7 @@ public class VehicleHUD : MonoBehaviour
         float angle = Mathf.Repeat(vehicle.heading, 360f);
         headingText.text = $"{directions[Mathf.RoundToInt(angle / 45f) % 8]}  {angle:000}°";
 
-        SetBar(throttleFill, vehicle.throttle, true);
+        SetBar(throttleFill, vehicle.throttle - vehicle.brake, true); // arriba acelera, abajo frena
         SetBar(steerFill, vehicle.steer, false);
 
         ArduinoSerial arduino = ArduinoSerial.Instance;

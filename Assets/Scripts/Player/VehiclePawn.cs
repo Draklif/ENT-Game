@@ -6,15 +6,17 @@ using UnityEngine;
 ///
 /// MODELO (lo que ya está hecho)
 ///    Estado:     x (posición), v (velocidad), heading (hacia dónde apunta, grados)
-///    Entradas:   throttle (-1..1, acelerar/reversa), steer (-1..1, timón)
+///    Entradas:   throttle (0..1), brake (0..1), steer (-1..1, timón)
 ///    Fuerzas:    F_motor = throttle · engineForce · adelante
+///                F_freno = -brake · brakeForce · adelante  (quieto: reversa)
 ///    Ecuaciones: a = ΣF / m
 ///                v[n+1] = v[n] + a·h              (Euler semi-implícito, igual que Particle)
 ///                x[n+1] = x[n] + v[n+1]·h
 ///    Giro:       ω = v_adelante / L · tan(δ)       (modelo de bicicleta)
 ///
-/// Ojo: sin fricción el vehículo nunca frena y, al girar, patina como en hielo.
-/// Eso es justo lo que les toca simular en ComputeForces() y CollideWithScene().
+/// Ojo: sin fricción el vehículo nunca se detiene solo, y el agarre lateral es un
+/// atajo que NO es física (ver ApplyGripPlaceholder). Simular eso de verdad es
+/// justo lo que les toca en ComputeForces() y CollideWithScene().
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class VehiclePawn : Pawn, ISimulable, IInteractable
@@ -25,6 +27,12 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
 
     [Tooltip("Fuerza máxima del motor (N).")]
     public float engineForce = 6000f;
+
+    [Tooltip("Fuerza máxima del freno (N). Detenido, frenar da reversa con la mitad de engineForce.")]
+    public float brakeForce = 9000f;
+
+    [Tooltip("Agarre lateral SIMPLIFICADO (1/s). 0 = hielo. Reemplazarlo por fricción real con μ.")]
+    public float gripPlaceholder = 6f;
 
     [Tooltip("Distancia entre ejes L (m).")]
     public float wheelBase = 2.5f;
@@ -44,6 +52,7 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
     public Vector3 v;
     public float heading;
     public float throttle;
+    public float brake;
     public float steer;
 
     /// <summary>Hacia dónde apunta el vehículo.</summary>
@@ -69,10 +78,11 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
         heading0 = transform.eulerAngles.y;
     }
 
-    public override void Move(Vector2 input)
+    public override void Drive(float throttle, float brake, float steer)
     {
-        steer = input.x;
-        throttle = input.y;
+        this.throttle = throttle;
+        this.brake = brake;
+        this.steer = steer;
     }
 
     /// <summary>Pasa la cámara (con su HUD) al siguiente punto de vista.</summary>
@@ -105,6 +115,7 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
         float delta = steer * maxSteerAngle * Mathf.Deg2Rad;
         float omega = Speed / wheelBase * Mathf.Tan(delta); // rad/s
         heading += omega * Mathf.Rad2Deg * h;
+        ApplyGripPlaceholder(h);
 
         // 4. Choques.
         CollideWithScene();
@@ -121,6 +132,10 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
         // Motor: empuja hacia donde apunta el vehículo.
         F += throttle * engineForce * Forward;
 
+        // Freno: se opone al avance. Casi detenido, el mismo pedal da reversa.
+        if (Speed > 0.5f) F -= brake * brakeForce * Forward;
+        else F -= brake * engineForce * 0.5f * Forward;
+
         // TODO Ideas de fenómenos (cada uno es una fuerza más):
         //   - Arrastre del aire:      F = -½·ρ·Cd·A·|v|·v
         //   - Resistencia rodadura:   F = -Crr·m·g·(v / |v|)
@@ -129,6 +144,16 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
         //   - Freno de mano: Jump() puede bajar el agarre de las llantas traseras.
         //   - Gravedad en rampas, empuje y sustentación (avión), etc.
         return F;
+    }
+
+    /// <summary>
+    /// shortcut: NO es física. Gira la velocidad hacia donde apunta el carro para que no
+    /// patine como en hielo, pero nunca derrapa. Reemplazar por fricción lateral real:
+    /// F_lat = -(v · derecha)·k, limitada a μ·m·g; si se pasa del límite, derrapa.
+    /// </summary>
+    void ApplyGripPlaceholder(float h)
+    {
+        v = Vector3.Lerp(v, Forward * Speed, gripPlaceholder * h);
     }
 
     /// <summary>Choque contra el escenario (paredes, rampas, otros objetos).</summary>
@@ -172,7 +197,6 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
         driver.gameObject.SetActive(true);
         Controller.Possess(driver);
         driver = null;
-        throttle = 0f;
-        steer = 0f;
+        Drive(0f, 0f, 0f);
     }
 }
