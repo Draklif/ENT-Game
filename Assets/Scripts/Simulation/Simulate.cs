@@ -22,12 +22,6 @@ public class Simulate : MonoBehaviour
         Time.fixedDeltaTime = h;
     }
 
-    void OnValidate()
-    {
-        // Al cambiar h en el inspector durante Play, se aplica de inmediato.
-        if (Application.isPlaying && h > 0f) Time.fixedDeltaTime = h;
-    }
-
     void Start()
     {
         // Busca todos los scripts de la escena que implementan ISimulable.
@@ -40,6 +34,8 @@ public class Simulate : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Si h cambió (inspector o menú de opciones), Unity llama FixedUpdate cada h segundos.
+        if (h > 0f) Time.fixedDeltaTime = h;
         if (!paused) Step();
     }
 
