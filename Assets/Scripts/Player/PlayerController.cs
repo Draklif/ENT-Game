@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class PlayerController : MonoBehaviour
 
     [Tooltip("Sensibilidad del mouse para mirar.")]
     public float lookSensitivity = 0.1f;
+
+    [Tooltip("Velocidad de giro con el stick derecho (grados por segundo).")]
+    public float stickLookSpeed = 180f;
 
     // Clase generada automáticamente desde Assets/InputSystem_Actions.inputactions
     private InputSystem_Actions input;
@@ -53,7 +57,12 @@ public class PlayerController : MonoBehaviour
 
         // Valores continuos: se leen en cada frame.
         pawn.Move(input.Player.Move.ReadValue<Vector2>());
-        pawn.Look(input.Player.Look.ReadValue<Vector2>() * lookSensitivity);
+        // El mouse da los píxeles movidos en ESTE frame; el stick da -1..1 (una velocidad),
+        // así que el stick se multiplica por el tiempo del frame.
+        Vector2 look = input.Player.Look.ReadValue<Vector2>();
+        if (input.Player.Look.activeControl?.device is Pointer) look *= lookSensitivity;
+        else look *= stickLookSpeed * Time.deltaTime;
+        pawn.Look(look);
         pawn.Drive(
             input.Vehicle.Throttle.ReadValue<float>(), // W / gatillo derecho
             input.Vehicle.Brake.ReadValue<float>(),    // S / gatillo izquierdo

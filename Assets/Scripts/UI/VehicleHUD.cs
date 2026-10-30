@@ -32,9 +32,10 @@ public class VehicleHUD : MonoBehaviour
         SetBar(steerFill, vehicle.steer, false);
 
         ArduinoSerial arduino = ArduinoSerial.Instance;
-        inputText.text = arduino != null && arduino.IsConnected ? $"ARDUINO  {arduino.ConnectedPort}" : "TECLADO";
+        if (arduino != null && arduino.IsConnected) inputText.text = $"ARDUINO  {arduino.ConnectedPort}";
+        else inputText.text = InputHint.UsingGamepad ? "CONTROL" : "TECLADO";
 
-        if (vehicle.views.Length > 0) viewText.text = vehicle.views[vehicle.CurrentView].name + "  [V]";
+        if (vehicle.views.Length > 0) viewText.text = vehicle.views[vehicle.CurrentView].name;
     }
 
     /// <summary>Estira el relleno entre el centro (0.5) y 0.5 + value/2.</summary>
