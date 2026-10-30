@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
         // Botones: se ejecutan UNA vez cuando se presiona la tecla.
         input.Player.Jump.performed += _ => pawn?.Jump();
         input.Player.Interact.performed += _ => pawn?.Interact();
+        input.Player.Next.performed += _ => pawn?.ChangeView(); // V o 2
 
         input.Simulation.Pause.performed += _ => Simulate.Instance.TogglePause();
         input.Simulation.Step.performed += _ => Simulate.Instance.Step();

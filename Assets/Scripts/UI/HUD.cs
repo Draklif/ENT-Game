@@ -12,6 +12,7 @@ public class HUD : MonoBehaviour
     public UnityEngine.UI.Image stateDot;
 
     [Header("Interacción")]
+    public GameObject crosshair;
     public GameObject interactPrompt;
     public TMP_Text interactText;
 
@@ -30,7 +31,8 @@ public class HUD : MonoBehaviour
         stateText.color = color;
         stateDot.color = color;
 
-        // Dentro de un vehículo el jugador está desactivado: no mostrar el aviso.
+        // Dentro de un vehículo el jugador está desactivado: ocultar mira y aviso.
+        crosshair.SetActive(pawn.isActiveAndEnabled);
         IInteractable target = pawn.isActiveAndEnabled ? pawn.Target : null;
         interactPrompt.SetActive(target != null);
         if (target != null) interactText.text = target.GetInteractText();

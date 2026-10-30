@@ -32,6 +32,13 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
     [Tooltip("Ángulo máximo de las llantas delanteras δ (grados).")]
     public float maxSteerAngle = 30f;
 
+    [Header("Cámara y cabina")]
+    [Tooltip("Puntos donde se pone la cámara; V cambia entre ellos. El primero es el inicial.")]
+    public Transform[] views;
+
+    [Tooltip("Opcional: este objeto gira con el timón (se ve desde la vista en 1ª persona).")]
+    public Transform steeringWheel;
+
     [Header("Estado (solo lectura)")]
     public Vector3 x;
     public Vector3 v;
@@ -44,6 +51,9 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
 
     /// <summary>Velocidad hacia adelante (m/s). Negativa = reversa.</summary>
     public float Speed => Vector3.Dot(v, Forward);
+
+    /// <summary>Índice en views de la vista actual.</summary>
+    public int CurrentView { get; private set; }
 
     private Rigidbody rb;
     private Vector3 x0;
@@ -63,6 +73,22 @@ public class VehiclePawn : Pawn, ISimulable, IInteractable
     {
         steer = input.x;
         throttle = input.y;
+    }
+
+    /// <summary>Pasa la cámara (con su HUD) al siguiente punto de vista.</summary>
+    public override void ChangeView()
+    {
+        if (views.Length == 0) return;
+        CurrentView = (CurrentView + 1) % views.Length;
+        pawnCamera.transform.SetParent(views[CurrentView], false);
+        pawnCamera.transform.localPosition = Vector3.zero;
+        pawnCamera.transform.localRotation = Quaternion.identity;
+    }
+
+    void Update()
+    {
+        // Volante visual: un timón real da ~1.5 vueltas hacia cada lado; aquí basta con 135°.
+        if (steeringWheel != null) steeringWheel.localRotation = Quaternion.Euler(0f, 0f, -steer * 135f);
     }
 
     public void Simulate(float h)

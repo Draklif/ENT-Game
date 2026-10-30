@@ -12,6 +12,7 @@ public abstract class Pawn : MonoBehaviour
     public virtual void Look(Vector2 input) { }
     public virtual void Jump() { }
     public virtual void Interact() { }
+    public virtual void ChangeView() { }
 
     public virtual void OnPossessed(PlayerController controller)
     {
