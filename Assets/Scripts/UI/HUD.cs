@@ -30,7 +30,8 @@ public class HUD : MonoBehaviour
         stateText.color = color;
         stateDot.color = color;
 
-        IInteractable target = pawn.Target;
+        // Dentro de un vehículo el jugador está desactivado: no mostrar el aviso.
+        IInteractable target = pawn.isActiveAndEnabled ? pawn.Target : null;
         interactPrompt.SetActive(target != null);
         if (target != null) interactText.text = target.GetInteractText();
     }
